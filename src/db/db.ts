@@ -26,8 +26,7 @@ export async function initializeDb() {
 			updateChannelId: collection.updateChannelId
 		});
 	})
-
-	console.log(cache)
+	
 	console.log("MongoDb ready!");
 
 }
