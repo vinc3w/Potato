@@ -38,7 +38,7 @@ module.exports = async (client: Client) => {
 		const medias = await fetchMediaList();
 		let mediaIds = medias.map(i => i.id);
 
-		cron.schedule("0,20,40 * * * * *", async () => {
+		cron.schedule("0,30 * * * * *", async () => {
 				
 			const jsonData = await fetchMediaList();
 			if (jsonData[0].id !== mediaIds[0]) {
