@@ -38,11 +38,12 @@ const command: BotCommand = {
 		const buttonResponse = await interaction.reply({
 			embeds: getEmbed(
 				"WARNING",
-				currentUpdateChannelId ?
+				currentUpdateChannelId && interaction.guild?.channels.cache.get(currentUpdateChannelId) ?
 					`Set update channel from <#${currentUpdateChannelId}> to <#${textChannel.id}>?` :
 					`Set update channel to <#${textChannel.id}>?`
 			),
-			components: [yesNoBtns()]
+			components: [yesNoBtns()],
+			ephemeral: true
 		});
 		const confirmation = await buttonResponse.awaitMessageComponent({
 			filter: i => i.user.id === interaction.user.id,

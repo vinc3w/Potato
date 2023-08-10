@@ -7,17 +7,14 @@ import { emojis } from "../config";
 const event: BotEvent = {
 	name: "instagramUpdate",
 	once: false,
-	execute(media: InstagramMedia, client: Client) {
+	execute(medias: InstagramMedia[], client: Client) {
 
 		const guildConfigs = getAllGuildConfig();
-		for (const guildConfig of guildConfigs) {
-			
-			const updateChannelId = guildConfig.updateChannelId;
-			if (!updateChannelId) break;
+		const embeds: EmbedBuilder[] = [];
+		if (!guildConfigs.length) return;
+		for (const media of medias) {
 
-			const textChannel = client.guilds.cache.get(guildConfig.id)
-													?.channels.cache.get(updateChannelId) as TextBasedChannel;
-			if (!textChannel) break;
+			if (media.media_type === "VIDEO") continue;
 
 			const ramdomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 			const embed = new EmbedBuilder()
@@ -28,7 +25,21 @@ const event: BotEvent = {
 				.setFooter({
 					text: `${ramdomEmoji} - @${media.username}`
 				});
-			textChannel.send({ embeds: [embed] });
+			embeds.push(embed);
+
+		}
+
+		for (const guildConfig of guildConfigs) {
+			
+			const updateChannelId = guildConfig.updateChannelId;
+			if (!updateChannelId) break;
+
+			const textChannel = client.guilds.cache.get(guildConfig.id)
+													?.channels.cache.get(updateChannelId) as TextBasedChannel;
+			if (!textChannel) break;
+
+			for (const embed of embeds)
+				textChannel.send({ embeds: [embed] });
 			
 		}
 		

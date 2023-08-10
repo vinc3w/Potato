@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from "../../types";
+import { BotCommand, GuildConfig } from "../../types";
 import { getGuildConfig } from "../../db/collections/guildConfig";
 import { getEmbed } from "../../utils/message";
 
@@ -14,7 +14,13 @@ const command: BotCommand = {
 
 		if (!interaction.guildId) return; 
 		const guildConfig = getGuildConfig(interaction.guildId);
-		if (!guildConfig) {
+
+		let definedProperty: string[] = [];
+		for (const config in guildConfig) 
+			if (config !== "id") 
+				guildConfig[config as keyof GuildConfig] && definedProperty.push(config);
+
+		if (!guildConfig || !definedProperty.length) {
 
 			interaction.reply({
 				embeds: getEmbed(
@@ -32,7 +38,8 @@ const command: BotCommand = {
 				"INFO",
 				`**Guild Id:** \`${guildConfig.id}\`
 				\n**Update Channel:** <#${guildConfig.updateChannelId}>`
-			)
+			),
+			ephemeral: true
 		});
 
 	}

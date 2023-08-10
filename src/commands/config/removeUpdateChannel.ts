@@ -33,7 +33,8 @@ const command: BotCommand = {
 				"WARNING",
 				`Remove <#${updateChannelId}> as update channel?`
 			),
-			components: [yesNoBtns()]
+			components: [yesNoBtns()],
+			ephemeral: true
 		});
 		const confirmation = await buttonResponse.awaitMessageComponent({
 			filter: i => i.user.id === interaction.user.id,

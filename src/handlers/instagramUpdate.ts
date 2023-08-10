@@ -35,23 +35,36 @@ module.exports = async (client: Client) => {
 
 		await getToken();
 
-		const foo = await fetchMediaList();
-		let currentNumOfMedia = foo.length;
+		const medias = await fetchMediaList();
+		let mediaIds = medias.map(i => i.id);
 
-		cron.schedule("* * * * *", async () => {
+		cron.schedule("0,20,40 * * * * *", async () => {
 				
 			const jsonData = await fetchMediaList();
-			if (jsonData.length > currentNumOfMedia) {
-
-				currentNumOfMedia++;
-				const newMedia = jsonData[0];
-				client.emit("instagramUpdate", newMedia);
+			if (jsonData[0].id !== mediaIds[0]) {
+				
+				let newMedias: InstagramMedia[] = [];
+				outer: for (let i = 0; i < mediaIds.length; i++) {
+					for (let j = 0; j < jsonData.length; j++) {
+				
+						if (mediaIds[i] === jsonData[j].id) {
+				
+							newMedias = jsonData.slice(0, j);
+							break outer;
+				
+						}
+				
+					}
+				}
+				if (newMedias.length)
+					client.emit("instagramUpdate", newMedias);
 
 			}
+			mediaIds = jsonData.map(i => i.id);
 
 		})
 
-		cron.schedule("* 0 0 1 * *", getToken);
+		cron.schedule("0 0 0 1 * *", getToken);
 
 	}
 	catch(e) {
